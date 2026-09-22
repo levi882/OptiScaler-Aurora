@@ -1,6 +1,7 @@
 param(
     [Parameter(Mandatory=$true)][string]$BasePackage,
     [Parameter(Mandatory=$true)][string]$Sm86Source,
+    [string]$RhiCache,
     [string]$ArchiveTool = 'C:/Program Files/Bandizip/bz.exe',
     [string]$Version = 'aurora-aio-preview.1'
 )
@@ -37,6 +38,36 @@ $ini = "; Aurora AIO: opt-in via the RTX 20/30 panel; save and restart the game.
 [IO.File]::WriteAllText((Join-Path $component 'dlssg_sm86.ini'), $ini, [Text.UTF8Encoding]::new($true))
 Copy-Item -LiteralPath (Join-Path $root 'docs/AIO_SM86.md') -Destination (Join-Path $output 'README_AIO.md')
 Copy-Item -LiteralPath (Join-Path $root 'LICENSE') -Destination $output
+if ($RhiCache) {
+    $runtimeLock = Join-Path $PSScriptRoot 'rhi-runtimes.lock.json'
+    $rhi = Get-Content -LiteralPath $runtimeLock -Raw | ConvertFrom-Json
+    $optional = Join-Path $output 'Optional/Runtimes'
+    New-Item -ItemType Directory -Path $optional | Out-Null
+    foreach ($package in $rhi.packages) {
+        $folder = Join-Path $RhiCache $package.tag
+        $zip = Join-Path $folder $package.asset
+        if ((Get-FileHash -LiteralPath $zip -Algorithm SHA256).Hash -ine $package.sha256) {
+            throw "RHI archive checksum mismatch: $zip"
+        }
+        if ($package.optional) {
+            # Keep alternatives compressed so recursive DLL discovery cannot select them.
+            Copy-Item -LiteralPath $zip -Destination $optional
+        } else {
+            foreach ($file in $package.files) {
+                $path = Join-Path (Join-Path $folder 'extracted') $file.name
+                if ((Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash -ine $file.sha256) {
+                    throw "RHI runtime checksum mismatch: $path"
+                }
+                Copy-Item -LiteralPath $path -Destination (Join-Path $output 'OptiScaler') -Force
+            }
+        }
+    }
+    # Keep a pristine original NR archive for restoring after trying an optional variant.
+    $originalNr = $rhi.packages | Where-Object tag -eq 'dlssnr-310.8.0'
+    Copy-Item -LiteralPath (Join-Path (Join-Path $RhiCache $originalNr.tag) $originalNr.asset) -Destination $optional
+    Copy-Item -LiteralPath $runtimeLock -Destination (Join-Path $output 'RHI_RUNTIMES.json')
+    Copy-Item -LiteralPath (Join-Path $root 'docs/RHI_RUNTIMES.md') -Destination (Join-Path $output 'README_RHI_RUNTIMES.md')
+}
 $commit = git -C $root rev-parse HEAD
 $dirty = @(git -C $root status --porcelain --untracked-files=no).Count -gt 0
 $build = @{
@@ -45,6 +76,7 @@ $build = @{
     sm86Version='0.3.5'; sm86Source='https://github.com/sdli1995/dlssg_for_sm86'
     sm86Commit='9621db573e07ed54f50c15bbb585ed9a7bdfac28'; sm86SHA256=$expectedSm86
     baseSHA256=$expectedBase; inGameValidated=$false
+    rhiRuntimesIncluded=[bool]$RhiCache
 }
 $build | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $output 'AIO_BUILD.json') -Encoding utf8
 $hashes = @(Get-ChildItem -LiteralPath $output -Recurse -File | Sort-Object FullName | ForEach-Object {

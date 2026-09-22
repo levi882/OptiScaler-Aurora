@@ -1,0 +1,182 @@
+﻿{
+    "repository":  "RankFTW/rhi-repo",
+    "packages":  [
+                     {
+                         "tag":  "dlss-310.9.1",
+                         "asset":  "nvngx_dlss_310.9.1.zip",
+                         "url":  "https://github.com/RankFTW/rhi-repo/releases/download/dlss-310.9.1/nvngx_dlss_310.9.1.zip",
+                         "sha256":  "aaba83b288bd145c3808e8d7a0ba03cc8c8676d18ad984b1bfa6563046a3ba37",
+                         "optional":  false,
+                         "files":  [
+                                       {
+                                           "name":  "nvngx_dlss.dll",
+                                           "sha256":  "3975567b8943c53acce397f2b72380092f84f162d00b0d2c7d08a1025c563983",
+                                           "version":  "310,9,1,0",
+                                           "signature":  "Valid"
+                                       }
+                                   ]
+                     },
+                     {
+                         "tag":  "dlssd-310.9.1",
+                         "asset":  "nvngx_dlssd_310.9.1.zip",
+                         "url":  "https://github.com/RankFTW/rhi-repo/releases/download/dlssd-310.9.1/nvngx_dlssd_310.9.1.zip",
+                         "sha256":  "51ffe1a5302d08451bef0820d52e2f3e36516cc31dff9fde2bb6543be214658c",
+                         "optional":  false,
+                         "files":  [
+                                       {
+                                           "name":  "nvngx_dlssd.dll",
+                                           "sha256":  "4bc7ea5fcb2f32cf86bc2cb072e8d2860914a0be511cbdcb2fc206c1d9d83b80",
+                                           "version":  "310,9,1,0",
+                                           "signature":  "Valid"
+                                       }
+                                   ]
+                     },
+                     {
+                         "tag":  "dlssg-310.9.1",
+                         "asset":  "nvngx_dlssg_310.9.1.zip",
+                         "url":  "https://github.com/RankFTW/rhi-repo/releases/download/dlssg-310.9.1/nvngx_dlssg_310.9.1.zip",
+                         "sha256":  "b42d4b89a8ba652d0ca038e0e1d4a241b1569d00559ef01dc772c2ec38e4e550",
+                         "optional":  false,
+                         "files":  [
+                                       {
+                                           "name":  "nvngx_dlssg.dll",
+                                           "sha256":  "ff6e90eb78b827927dff5b4ecc6b1c870c2e9bca29ed9f48c7d348cc9e170b82",
+                                           "version":  "310,9,1,0",
+                                           "signature":  "Valid"
+                                       }
+                                   ]
+                     },
+                     {
+                         "tag":  "dlssnr-310.8.0",
+                         "asset":  "nvngx_dlssnr_310.8.0.zip",
+                         "url":  "https://github.com/RankFTW/rhi-repo/releases/download/dlssnr-310.8.0/nvngx_dlssnr_310.8.0.zip",
+                         "sha256":  "388c0a7912e15ec911b9c9e11a692142b11fe387ddf2b637d8c358138fffb3ac",
+                         "optional":  false,
+                         "files":  [
+                                       {
+                                           "name":  "nvngx_dlssnr.dll",
+                                           "sha256":  "e16bcf15e16e13f527491cdf7845b2fe6521a738d8f7c9c721866a8496e1fc8e",
+                                           "version":  "310,8,0,0",
+                                           "signature":  "Valid"
+                                       }
+                                   ]
+                     },
+                     {
+                         "tag":  "dlssnr-310.8.0-RTX40",
+                         "asset":  "nvngx_dlssnr_310.8.0-RTX40.zip",
+                         "url":  "https://github.com/RankFTW/rhi-repo/releases/download/dlssnr-310.8.0-RTX40/nvngx_dlssnr_310.8.0-RTX40.zip",
+                         "sha256":  "46124cfaef532ad5f6da07494772ea8c1b3e719f934e254385697f38d1289e3f",
+                         "optional":  true,
+                         "files":  [
+                                       {
+                                           "name":  "nvngx_dlssnr.dll",
+                                           "sha256":  "4b8d19bc3eff58a084f5eca7489c921501c203450169fb82ff4f649a4482ba05",
+                                           "version":  "310,8,0,0",
+                                           "signature":  "HashMismatch"
+                                       }
+                                   ]
+                     },
+                     {
+                         "tag":  "dlssnr-310.8.SF-v2",
+                         "asset":  "nvngx_dlssnr_310.8.SF-v2.zip",
+                         "url":  "https://github.com/RankFTW/rhi-repo/releases/download/dlssnr-310.8.SF-v2/nvngx_dlssnr_310.8.SF-v2.zip",
+                         "sha256":  "1da35941894994eb087e017577829e492454e9bae3a6a9397027069ceb74955c",
+                         "optional":  true,
+                         "files":  [
+                                       {
+                                           "name":  "nvngx_dlssnr.dll",
+                                           "sha256":  "6eb209e764f39872625debd6abaf45e2bb6322f6f270f781f70c059ae30b3927",
+                                           "version":  "310.8.SF.0",
+                                           "signature":  "NotSigned"
+                                       }
+                                   ]
+                     },
+                     {
+                         "tag":  "streamline-2.14.1.0",
+                         "asset":  "streamline_2.14.1.0.zip",
+                         "url":  "https://github.com/RankFTW/rhi-repo/releases/download/streamline-2.14.1.0/streamline_2.14.1.0.zip",
+                         "sha256":  "381da20bc36010c0bc589839795af4a86b3d3dc71966237b8dba9d4610b5b827",
+                         "optional":  true,
+                         "files":  [
+                                       {
+                                           "name":  "NvLowLatencyVk.dll",
+                                           "sha256":  "2a77dc3e1c724b7eea5755be0ae7423752e79a2459fae72181a9f00e3507e5d6",
+                                           "version":  null,
+                                           "signature":  "Valid"
+                                       },
+                                       {
+                                           "name":  "nvngx_deepdvc.dll",
+                                           "sha256":  "dc9562c67594fa06b763fe5d78f4aa53452c5344f8b43e6e2b81264320588500",
+                                           "version":  "310,9,1,0",
+                                           "signature":  "Valid"
+                                       },
+                                       {
+                                           "name":  "sl.common.dll",
+                                           "sha256":  "82924a8954dd671e09351c5de0eb87ad0eb25b944cc9f9ab955ca1d9950de15d",
+                                           "version":  "2,14,1,0",
+                                           "signature":  "Valid"
+                                       },
+                                       {
+                                           "name":  "sl.deepdvc.dll",
+                                           "sha256":  "e4b7e83c9e67eab7023222af13de239241e8a09bdb63faf26f803e9fd0f3e9c9",
+                                           "version":  "2,14,1,0",
+                                           "signature":  "Valid"
+                                       },
+                                       {
+                                           "name":  "sl.directsr.dll",
+                                           "sha256":  "4b2c0c90195c3a9991b4e0b59004113511a90802c85d81fc7faa7c7c75f53927",
+                                           "version":  "2,14,1,0",
+                                           "signature":  "Valid"
+                                       },
+                                       {
+                                           "name":  "sl.dlss.dll",
+                                           "sha256":  "73bf52c0cfaa5900a8f3f4a91306e4625e7cca696dfb305aae44c9f97b582e1f",
+                                           "version":  "2,14,1,0",
+                                           "signature":  "Valid"
+                                       },
+                                       {
+                                           "name":  "sl.dlss_d.dll",
+                                           "sha256":  "026b9f4f9ea848f2f5aa0e2024fc6b1c885f57eea5d41078124dba14f873b86b",
+                                           "version":  "2,14,1,0",
+                                           "signature":  "Valid"
+                                       },
+                                       {
+                                           "name":  "sl.dlss_g.dll",
+                                           "sha256":  "f4a6b2b14dcc0b1485989e430d3b4e3a44ac1800b92ba1ad74f476e64fb2b09c",
+                                           "version":  "2,14,1,0",
+                                           "signature":  "Valid"
+                                       },
+                                       {
+                                           "name":  "sl.interposer.dll",
+                                           "sha256":  "8c87c9499461da561edd529aa9bf7831d67d7b94ebb1c1a5ed54ef4934e1ea4c",
+                                           "version":  "2,14,1,0",
+                                           "signature":  "Valid"
+                                       },
+                                       {
+                                           "name":  "sl.nis.dll",
+                                           "sha256":  "556870e456d268601188919927b3b122f76b25f9b221cc4b15d3ef649f0ad27b",
+                                           "version":  "2,14,1,0",
+                                           "signature":  "Valid"
+                                       },
+                                       {
+                                           "name":  "sl.nvperf.dll",
+                                           "sha256":  "b4ca8f8eeba653446f27d20e8b394cdaae5d518c1292b440a4b97652e0f0376b",
+                                           "version":  "2,14,1,0",
+                                           "signature":  "Valid"
+                                       },
+                                       {
+                                           "name":  "sl.pcl.dll",
+                                           "sha256":  "f13d51cfa05f4cd514df2026049e2db8adf359221713170ad386fd499915b582",
+                                           "version":  "2,14,1,0",
+                                           "signature":  "Valid"
+                                       },
+                                       {
+                                           "name":  "sl.reflex.dll",
+                                           "sha256":  "0ce9725e3e03ea9e7f81d008b57f33ee365973d2e349131c8b1c3e3378fe2db0",
+                                           "version":  "2,14,1,0",
+                                           "signature":  "Valid"
+                                       }
+                                   ]
+                     }
+                 ]
+}

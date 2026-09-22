@@ -1,4 +1,4 @@
-param([Parameter(Mandatory=$true)][string]$Sm86Source)
+param([Parameter(Mandatory=$true)][string]$Sm86Source, [string]$RuntimeDll)
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
 $testRoot = Join-Path $root ('build_out/aio-smoke-' + [Guid]::NewGuid().ToString('N'))
@@ -25,7 +25,7 @@ foreach ($mode in @('absent', 'disabled', 'enabled')) {
         $ini = $ini -replace '(?m)^CacheDirectory=.*$', "CacheDirectory=$cache"
         [IO.File]::WriteAllText((Join-Path $component 'dlssg_sm86.ini'), $ini, [Text.UTF8Encoding]::new($true))
     }
-    $runtime = Join-Path $root 'dist/nvngx/nvngx_dlssg.dll'
+    $runtime = if ($RuntimeDll) { (Resolve-Path -LiteralPath $RuntimeDll).Path } else { Join-Path $root 'dist/nvngx/nvngx_dlssg.dll' }
     $process = New-Object Diagnostics.Process
     $process.StartInfo.FileName = $stageExe
     $process.StartInfo.Arguments = '"' + $aurora + '" "' + $proxy + '" ' + $enabled + ' "' + $runtime + '"'

@@ -3150,7 +3150,7 @@ void MenuCommon::RenderActiveUpscalerSettings(RenderMenuContext& ctx)
 
             ImGui::SameLine(0.0f, 6.0f);
 
-            if (ImGui::Button(AURORA_CN("应用更改")))
+            if (ImGui::Button(AURORA_CN("应用更改###dlss_preset_apply")))
             {
                 LOG_DEBUG("Applying DLSS/DLSSD preset override changes, preset index: {}",
                           comboPreset.value_or_default());
@@ -5787,7 +5787,7 @@ void MenuCommon::RenderActiveImageSettings(RenderMenuContext& ctx)
                                     _ssDownsampler != config->OutputScalingDownscaler.value_or_default();
 
                 ImGui::BeginDisabled(!applyEnabled);
-                if (ImGui::Button(AURORA_CN("应用更改")))
+                if (ImGui::Button(AURORA_CN("应用更改###output_scaling_apply")))
                 {
                     config->OutputScalingEnabled = _ssEnabled;
                     config->OutputScalingMultiplier = _ssRatio;

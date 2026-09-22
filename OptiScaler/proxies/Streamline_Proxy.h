@@ -8,6 +8,7 @@
 #include <proxies/Ntdll_Proxy.h>
 #include <proxies/KernelBase_Proxy.h>
 #include <hooks/Streamline_Hooks.h>
+#include <framegen/dlssg/Sm86Integration.h>
 
 #include <sl.h>
 #include <sl_pcl.h>
@@ -103,7 +104,16 @@ class StreamlineProxy
             if (!std::filesystem::exists(dlssgPath))
                 dlssgPath = localSlPath / L"nvngx_dlssg.dll"; // legacy/manual layout fallback
 
-            State::Instance().optiDLSSG = NtdllProxy::LoadLibraryExW_Ldr(dlssgPath.c_str(), NULL, NULL);
+            if (Sm86::IsLoaded())
+            {
+                // The external proxy routes LoadLibrary calls to its matched bundled runtime.
+                // LdrLoadDll would bypass that routing and load the unadapted NVIDIA snippet.
+                State::DisableChecks(owner);
+                State::Instance().optiDLSSG = LoadLibraryExW(dlssgPath.c_str(), nullptr, 0);
+                State::EnableChecks(owner);
+            }
+            else
+                State::Instance().optiDLSSG = NtdllProxy::LoadLibraryExW_Ldr(dlssgPath.c_str(), NULL, NULL);
 
             return HookStreamline(_dll);
         }

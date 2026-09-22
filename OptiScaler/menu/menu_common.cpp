@@ -18,6 +18,7 @@
 
 #include <framegen/nvngx/Nvngx_FG.h>
 #include <framegen/dlssg/MfgUnlock.h>
+#include <framegen/dlssg/Sm86Integration.h>
 
 #include <nvapi/fakenvapi.h>
 #include <hooks/Reflex_Hooks.h>
@@ -3305,7 +3306,9 @@ void MenuCommon::RenderFrameGenerationSelection(RenderMenuContext& ctx)
 
     // DLSSG output requirements
     auto constexpr dlssgOutputIndex = (uint32_t) FGOutput::DLSSG;
-    const bool supportsDlssg = primaryGpu.nvidiaArchInfo.architecture_id >= NV_GPU_ARCHITECTURE_AD100;
+    const bool supportsDlssg = primaryGpu.nvidiaArchInfo.architecture_id >= NV_GPU_ARCHITECTURE_AD100 ||
+                              (Sm86::IsLoaded() && primaryGpu.vendorId == VendorId::Nvidia &&
+                               state.swapchainApi == API::DX12);
     const bool hasDlssgReplacement =
         state.nukemsFgFileAvailable || state.artursFgFileAvailable || FfxApiProxy::IsFGReady(false);
 
@@ -3390,6 +3393,8 @@ void MenuCommon::RenderFrameGenerationSelection(RenderMenuContext& ctx)
     }
 
     auto constexpr fgNvngxNoneIndex = (uint32_t) FGNvngxReplacement::None;
+    if (Sm86::IsLoaded())
+        nvngxOptions[fgNvngxNoneIndex].tooltip = AuroraUtf8(L"使用已加载的 RTX 20/30 DLSSG 组件；实验性 D3D12 组合。实际帧生成状态请查看组件日志。");
     nvngxOptions[fgNvngxNoneIndex].set_disabled(!supportsDlssg, AuroraUtf8(L"当前硬件不支持"));
 
     if (replaceFgOutputWithNvngx)
@@ -3570,12 +3575,16 @@ void MenuCommon::RenderFrameGenerationSelection(RenderMenuContext& ctx)
 
             bool adaUnlock = config->FGDLSSGAdaMfgUnlock.value_or_default();
 
+            ImGui::BeginDisabled(Sm86::OwnsRuntime());
             if (ImGui::Checkbox(AURORA_CN("解锁 RTX 40 MFG"), &adaUnlock))
                 config->FGDLSSGAdaMfgUnlock = adaUnlock;
+            ImGui::EndDisabled();
+            if (Sm86::OwnsRuntime())
+                ImGui::TextWrapped("%s", AURORA_CN("RTX 20/30 组件正在管理 DLSSG，本次启动不应用 RTX 40 解锁补丁。"));
 
             // The patch is applied once, as nvngx_dlssg.dll loads, so the box moving does nothing
             // this session. Say so beside it rather than only in the tooltip.
-            if (adaUnlock != (state.dlssgMfgMax.value_or(1) > 1))
+            if (!Sm86::OwnsRuntime() && adaUnlock != (state.dlssgMfgMax.value_or(1) > 1))
             {
                 ImGui::SameLine();
                 ImGui::TextColored(ImVec4(1.f, 0.8f, 0.f, 1.f), AURORA_CN("（重启后生效）"));
@@ -3587,7 +3596,7 @@ void MenuCommon::RenderFrameGenerationSelection(RenderMenuContext& ctx)
             // is not recognised -- the expected outcome on an unexamined version, not a fault. Saying
             // which version that was is the difference between a report that can be acted on and "it
             // does not work".
-            if (adaUnlock)
+            if (adaUnlock && !Sm86::OwnsRuntime())
             {
                 const auto& mfg = MfgUnlock::LastStatus();
 
@@ -7101,6 +7110,7 @@ void MenuCommon::RenderMainMenuTable(RenderMenuContext& ctx)
 
         // Left column: active upscaler state, frame generation, FSR common, latency and fakenvapi controls.
         RenderActiveUpscalerSettings(ctx);
+        Sm86::RenderMenu();
         RenderFrameGenerationSelection(ctx);
         RenderFrameGenerationRuntimeSettings(ctx);
         RenderFsrCommonSettings(ctx);

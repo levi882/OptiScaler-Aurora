@@ -17,6 +17,7 @@
 #include <proxies/XeFG_Proxy.h>
 #include <proxies/XeLL_Proxy.h>
 #include <proxies/NVNGX_Proxy.h>
+#include <framegen/dlssg/Sm86Integration.h>
 #include <proxies/FfxApi_Proxy.h>
 
 #include "inputs/FSR2_Dx11.h"
@@ -2017,6 +2018,9 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
 
         spdlog::info("");
         CheckQuirks(possibleNvidia);
+
+        // Load the optional SM86 proxy before Aurora installs its loader hooks.
+        Sm86::Initialize();
 
         // Check for working mode and attach hooks
         spdlog::info("");

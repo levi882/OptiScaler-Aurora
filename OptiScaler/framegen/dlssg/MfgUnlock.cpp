@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include "MfgUnlock.h"
+#include "Sm86Integration.h"
 
 #include <Config.h>
 #include <Util.h>
@@ -328,7 +329,7 @@ unsigned int RewriteBlackwellKernels(HMODULE module)
 
 void MfgUnlock::TryApply()
 {
-    if (!Config::Instance()->FGDLSSGAdaMfgUnlock.value_or_default())
+    if (Sm86::OwnsRuntime() || !Config::Instance()->FGDLSSGAdaMfgUnlock.value_or_default())
         return;
 
     if (auto module = GetModuleHandleW(L"nvngx_dlssg.dll"); module != nullptr)
@@ -353,7 +354,7 @@ static std::wstring ModulePath(HMODULE module)
 
 void MfgUnlock::TryApply(HMODULE module)
 {
-    if (!Config::Instance()->FGDLSSGAdaMfgUnlock.value_or_default() || module == nullptr)
+    if (Sm86::OwnsRuntime() || !Config::Instance()->FGDLSSGAdaMfgUnlock.value_or_default() || module == nullptr)
         return;
 
     {

@@ -3630,38 +3630,48 @@ void MenuCommon::RenderFrameGenerationSelection(RenderMenuContext& ctx)
                 else if (!Sm86::OwnsRuntime())
                     ImGui::TextWrapped("%s", AURORA_CN("状态：解锁开关已关闭"));
 
-                ImGui::Spacing();
-                ImGui::BeginDisabled(!state.dlssgGameDMFGSupported || Sm86::OwnsRuntime());
+                ImGui::TextDisabled("%s", AURORA_CN("使用底部“保存设置”，重启游戏后生效。"));
+                ImGui::PopTextWrapPos();
+            }
+        }
+
+        if (!dlssgInputOrOutput)
+        {
+            if (auto section = ScopedCollapsingHeader(AURORA_CN("动态 MFG###dynamic_mfg_settings"),
+                                                       ImGuiTreeNodeFlags_DefaultOpen);
+                section.IsHeaderOpen())
+            {
+                ScopedIndent indent;
+                ImGui::BeginDisabled(!state.dlssgGameDMFGSupported);
                 if (bool dynamicMFG = config->FGDLSSGOverrideForceDMFG.value_or_default();
-                    ImGui::Checkbox(AURORA_CN("动态多帧生成###rtx40_force_dmfg"), &dynamicMFG))
+                    ImGui::Checkbox(AURORA_CN("强制动态 MFG###dynamic_mfg_force"), &dynamicMFG))
                 {
                     config->FGDLSSGOverrideForceDMFG = dynamicMFG;
                     StreamlineHooks::updateDlssgOptions();
                 }
-                ShowHelpMarker(AURORA_CN("需要游戏的 Streamline DLSSG 报告支持动态多帧生成。未检测到支持时，控件会显示为不可用。"));
+                ShowHelpMarker(AURORA_CN("适用于 RTX 20/30 DLSSG 与 RTX 40 MFG。需要游戏的 Streamline DLSSG 报告支持动态 MFG；未检测到支持时控件不可操作。SM86 倍率仍受组件配置和游戏插件的上限约束。"));
                 ImGui::EndDisabled();
 
                 ImGui::BeginDisabled(!state.dlssgGameDMFGSupported ||
-                                     state.dlssgLastSetMode != sl::DLSSGMode::eDynamic || Sm86::OwnsRuntime());
+                                     state.dlssgLastSetMode != sl::DLSSGMode::eDynamic);
                 static float fpsTarget = config->FGDLSSGFramerateTargetDMFG.value_or_default();
-                ImGui::SliderFloat(AURORA_CN("动态多帧生成目标帧数###rtx40_dmfg_fps_target"), &fpsTarget, 0, 200, "%.0f");
-                ShowHelpMarker(AURORA_CN("设为 0 时，会自动检测显示器刷新率作为生效上限。"));
+                ImGui::SliderFloat(AURORA_CN("DMFG 目标帧数###dynamic_mfg_fps_target"), &fpsTarget, 0, 200, "%.0f");
+                ShowHelpMarker(AURORA_CN("仅在动态 MFG 模式下生效；设为 0 时自动检测显示器刷新率作为上限。"));
 
-                if (ImGui::Button(AURORA_CN("应用目标###rtx40_dmfg_apply_target")))
+                if (ImGui::Button(AURORA_CN("应用目标###dynamic_mfg_apply_target")))
                 {
                     config->FGDLSSGFramerateTargetDMFG = fpsTarget;
                     StreamlineHooks::updateDlssgOptions();
                 }
                 ImGui::SameLine(0.0f, 16.0f);
-                if (ImGui::Button(AURORA_CN("重置目标###rtx40_dmfg_reset_target")))
+                if (ImGui::Button(AURORA_CN("重置目标###dynamic_mfg_reset_target")))
                 {
                     fpsTarget = 0.0f;
                     config->FGDLSSGFramerateTargetDMFG.reset();
                 }
                 ImGui::EndDisabled();
-
-                ImGui::TextDisabled("%s", AURORA_CN("使用底部“保存设置”，重启游戏后生效。"));
-                ImGui::PopTextWrapPos();
+                if (!state.dlssgGameDMFGSupported)
+                    ImGui::TextDisabled("%s", AURORA_CN("当前游戏未报告支持动态 MFG。"));
             }
         }
 

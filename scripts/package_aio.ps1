@@ -1,12 +1,13 @@
 param(
     [Parameter(Mandatory=$true)][string]$BasePackage,
     [Parameter(Mandatory=$true)][string]$Sm86Source,
-    [string]$RhiCache = (Join-Path (Split-Path -Parent $PSScriptRoot) 'build_out/rhi'),
+    [string]$RhiCache,
     [string]$ArchiveTool = 'C:/Program Files/Bandizip/bz.exe',
     [string]$Version = 'aurora-aio-preview.1-rhi2'
 )
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
+if (-not $PSBoundParameters.ContainsKey('RhiCache')) { $RhiCache = Join-Path $root 'build_out/rhi' }
 if (-not $RhiCache) { throw 'RHI cache is required: run scripts/fetch_rhi_runtimes.ps1 first' }
 $runtimeLock = Join-Path $PSScriptRoot 'rhi-runtimes.lock.json'
 $rhi = Get-Content -LiteralPath $runtimeLock -Raw | ConvertFrom-Json

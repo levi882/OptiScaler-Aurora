@@ -3557,26 +3557,12 @@ void MenuCommon::RenderFrameGenerationSelection(RenderMenuContext& ctx)
 
         ImGui::EndDisabled();
 
-        if (!dlssgInputOrOutput)
-        {
-            if (state.dlssgGameDMFGSupported)
-            {
-                ImGui::SameLine(0.0f, 16.0f);
-
-                if (bool dynamicMFG = config->FGDLSSGOverrideForceDMFG.value_or_default();
-                    ImGui::Checkbox(AURORA_CN("动态多帧生成"), &dynamicMFG))
-                {
-                    config->FGDLSSGOverrideForceDMFG = dynamicMFG;
-                    StreamlineHooks::updateDlssgOptions();
-                }
-            }
-        }
-
         Sm86::RenderMenu();
 
         if (!dlssgInputOrOutput)
         {
-            if (auto section = ScopedCollapsingHeader(AURORA_CN("RTX 40 MFG###rtx40_mfg_settings"));
+            if (auto section = ScopedCollapsingHeader(AURORA_CN("RTX 40 MFG###rtx40_mfg_settings"),
+                                                      ImGuiTreeNodeFlags_DefaultOpen);
                 section.IsHeaderOpen())
             {
                 ScopedIndent indent;
@@ -3643,34 +3629,40 @@ void MenuCommon::RenderFrameGenerationSelection(RenderMenuContext& ctx)
                 }
                 else if (!Sm86::OwnsRuntime())
                     ImGui::TextWrapped("%s", AURORA_CN("状态：解锁开关已关闭"));
+
+                ImGui::Spacing();
+                ImGui::BeginDisabled(!state.dlssgGameDMFGSupported || Sm86::OwnsRuntime());
+                if (bool dynamicMFG = config->FGDLSSGOverrideForceDMFG.value_or_default();
+                    ImGui::Checkbox(AURORA_CN("动态多帧生成###rtx40_force_dmfg"), &dynamicMFG))
+                {
+                    config->FGDLSSGOverrideForceDMFG = dynamicMFG;
+                    StreamlineHooks::updateDlssgOptions();
+                }
+                ShowHelpMarker(AURORA_CN("需要游戏的 Streamline DLSSG 报告支持动态多帧生成。未检测到支持时，控件会显示为不可用。"));
+                ImGui::EndDisabled();
+
+                ImGui::BeginDisabled(!state.dlssgGameDMFGSupported ||
+                                     state.dlssgLastSetMode != sl::DLSSGMode::eDynamic || Sm86::OwnsRuntime());
+                static float fpsTarget = config->FGDLSSGFramerateTargetDMFG.value_or_default();
+                ImGui::SliderFloat(AURORA_CN("动态多帧生成目标帧数###rtx40_dmfg_fps_target"), &fpsTarget, 0, 200, "%.0f");
+                ShowHelpMarker(AURORA_CN("设为 0 时，会自动检测显示器刷新率作为生效上限。"));
+
+                if (ImGui::Button(AURORA_CN("应用目标###rtx40_dmfg_apply_target")))
+                {
+                    config->FGDLSSGFramerateTargetDMFG = fpsTarget;
+                    StreamlineHooks::updateDlssgOptions();
+                }
+                ImGui::SameLine(0.0f, 16.0f);
+                if (ImGui::Button(AURORA_CN("重置目标###rtx40_dmfg_reset_target")))
+                {
+                    fpsTarget = 0.0f;
+                    config->FGDLSSGFramerateTargetDMFG.reset();
+                }
+                ImGui::EndDisabled();
+
                 ImGui::TextDisabled("%s", AURORA_CN("使用底部“保存设置”，重启游戏后生效。"));
                 ImGui::PopTextWrapPos();
             }
-        }
-
-        if (!dlssgInputOrOutput && state.dlssgGameDMFGSupported)
-        {
-            ImGui::BeginDisabled(state.dlssgLastSetMode != sl::DLSSGMode::eDynamic);
-            static float fpsTarget = config->FGDLSSGFramerateTargetDMFG.value_or_default();
-            ImGui::SliderFloat(AURORA_CN("动态多帧生成目标帧数"), &fpsTarget, 0, 200, "%.0f");
-
-            ShowHelpMarker(AURORA_CN("设为 0 时，会自动检测显示器刷新率作为生效上限。"));
-
-            if (ImGui::Button(AURORA_CN("应用目标")))
-            {
-                config->FGDLSSGFramerateTargetDMFG = fpsTarget;
-                StreamlineHooks::updateDlssgOptions();
-            }
-
-            ImGui::SameLine(0.0f, 16.0f);
-
-            if (ImGui::Button(AURORA_CN("重置目标")))
-            {
-                fpsTarget = 0.0f;
-                config->FGDLSSGFramerateTargetDMFG.reset();
-            }
-
-            ImGui::EndDisabled();
         }
 
         auto fgOutput = reinterpret_cast<IFGFeature_Dx12*>(state.currentFG);

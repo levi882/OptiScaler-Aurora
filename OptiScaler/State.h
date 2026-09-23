@@ -148,6 +148,8 @@ class State
     // Frame Generation
     FGInput activeFgInput = FGInput::NoFG;
     FGOutput activeFgOutput = FGOutput::NoFG;
+    // Captured at startup; the in-memory patch cannot be undone while the game is running.
+    bool activeDlssgAdaMfgUnlock = false;
     // This should be set to a non-None value only if all other requirements are met and nvngx can be used
     FGNvngxReplacement activeFgNvngx = FGNvngxReplacement::None;
 

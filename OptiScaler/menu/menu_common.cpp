@@ -2071,7 +2071,18 @@ void MenuCommon::RenderPerformanceOverlay(RenderMenuContext& ctx)
             }
             else if (state.activeFgOutput == FGOutput::DLSSG && fg)
             {
-                fgText = formatFg("DLSSG", fg->GetMaxInterpolationCount());
+                if (state.activeFgInput == FGInput::Upscaler)
+                {
+                    // The game's DLSSG input counter is never updated by OptiFG.
+                    if (!config->FGEnabled.value_or_default())
+                        fgText = " (DLSSG off)";
+                    else if (fg->IsActive() && !fg->IsPaused())
+                        fgText = std::format(" (DLSSG target x{})", fg->GetInterpolatedFrameCount() + 1);
+                    else
+                        fgText = " (DLSSG waiting)";
+                }
+                else
+                    fgText = formatFg("DLSSG", fg->GetMaxInterpolationCount());
             }
 
             const auto overlayType = config->FpsOverlayType.value_or_default();
@@ -3623,7 +3634,7 @@ void MenuCommon::RenderFrameGenerationSelection(RenderMenuContext& ctx)
 
                 // The patch is applied once, as nvngx_dlssg.dll loads, so the box moving does nothing
                 // this session. Say so beside it rather than only in the tooltip.
-                if (!Sm86::OwnsRuntime() && adaUnlock != (state.dlssgMfgMax.value_or(1) > 1))
+                if (!Sm86::OwnsRuntime() && adaUnlock != state.activeDlssgAdaMfgUnlock)
                 {
                     ImGui::TextColored(ImVec4(1.f, 0.8f, 0.f, 1.f), AURORA_CN("（重启后生效）"));
                 }
@@ -3634,7 +3645,7 @@ void MenuCommon::RenderFrameGenerationSelection(RenderMenuContext& ctx)
                 // is not recognised -- the expected outcome on an unexamined version, not a fault. Saying
                 // which version that was is the difference between a report that can be acted on and "it
                 // does not work".
-                if (adaUnlock && !Sm86::OwnsRuntime())
+                if (state.activeDlssgAdaMfgUnlock && !Sm86::OwnsRuntime())
                 {
                     const auto& mfg = MfgUnlock::LastStatus();
 
@@ -3671,7 +3682,7 @@ void MenuCommon::RenderFrameGenerationSelection(RenderMenuContext& ctx)
                     }
                 }
                 else if (!Sm86::OwnsRuntime())
-                    ImGui::TextWrapped("%s", AURORA_CN("状态：解锁开关已关闭"));
+                    ImGui::TextWrapped("%s", AURORA_CN("状态：本次启动未启用解锁补丁"));
 
                 ImGui::PopTextWrapPos();
             }
@@ -4329,15 +4340,28 @@ void MenuCommon::RenderFrameGenerationRuntimeSettings(RenderMenuContext& ctx)
             }
         }
 
-        ImGui::Text(AURORA_CN("当前 DLSSG 状态："));
-        ImGui::SameLine();
-        if (auto count = state.dlssgDetectedInterpolationCount; count > 0)
+        if (state.activeFgInput == FGInput::Upscaler)
         {
-            ImGui::TextColored(toneMapColor(ImVec4(0.f, 1.f, 0.25f, 1.f)), std::format("{} {}x", AuroraUtf8(L"开启"), count + 1).c_str());
+            ImGui::Text(AURORA_CN("OptiFG → DLSSG 输出："));
+            ImGui::SameLine();
+            if (!config->FGEnabled.value_or_default())
+                ImGui::TextColored(toneMapColor(ImVec4(1.f, 0.f, 0.f, 1.f)), AURORA_CN("关闭"));
+            else if (fgOutput->IsActive() && !fgOutput->IsPaused())
+                ImGui::TextColored(toneMapColor(ImVec4(0.f, 1.f, 0.25f, 1.f)), AURORA_CN("已启用（目标 %ux）"),
+                                   fgOutput->GetInterpolatedFrameCount() + 1);
+            else
+                ImGui::TextColored(toneMapColor(ImVec4(1.f, 0.8f, 0.f, 1.f)), AURORA_CN("已启用，等待输入"));
+            ShowHelpMarker(AURORA_CN("这里显示 OptiFG 到 DLSSG 输出的启用状态和目标倍率。游戏没有原生 FG 输入时，游戏 DLSSG 计数器不会更新；目标倍率不代表实际生成帧数。"));
         }
         else
         {
-            ImGui::TextColored(toneMapColor(ImVec4(1.f, 0.f, 0.f, 1.f)), AURORA_CN("关闭"));
+            ImGui::Text(AURORA_CN("当前 DLSSG 状态："));
+            ImGui::SameLine();
+            if (auto count = state.dlssgDetectedInterpolationCount; count > 0)
+                ImGui::TextColored(toneMapColor(ImVec4(0.f, 1.f, 0.25f, 1.f)),
+                                   std::format("{} {}x", AuroraUtf8(L"开启"), count + 1).c_str());
+            else
+                ImGui::TextColored(toneMapColor(ImVec4(1.f, 0.f, 0.f, 1.f)), AURORA_CN("关闭"));
         }
 
         bool fgActive = config->FGEnabled.value_or_default();

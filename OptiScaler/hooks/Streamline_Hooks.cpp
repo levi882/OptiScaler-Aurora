@@ -1181,7 +1181,7 @@ sl::Result StreamlineHooks::hkslDLSSGSetOptions(const sl::ViewportHandle& viewpo
         // 1. Caching that holds it for the session and clamps the override to it. AnyModuleSeen
         // means the patches have been attempted, so from there the answer is final either way.
         const bool unlockPending =
-            !Sm86::OwnsRuntime() && Config::Instance()->FGDLSSGAdaMfgUnlock.value_or_default() && !MfgUnlock::AnyModuleSeen();
+            !Sm86::OwnsRuntime() && state.activeDlssgAdaMfgUnlock && !MfgUnlock::AnyModuleSeen();
 
         // Populate dlssgMfgMax once
         if (!state.dlssgMfgMax.has_value() && !unlockPending)
@@ -1306,7 +1306,7 @@ sl::Result StreamlineHooks::hkslDLSSGGetState(const sl::ViewportHandle& viewport
     {
         // Provisional until the snippet has been seen. See the note in hkslDLSSGSetOptions.
         const bool unlockPending =
-            !Sm86::OwnsRuntime() && Config::Instance()->FGDLSSGAdaMfgUnlock.value_or_default() && !MfgUnlock::AnyModuleSeen();
+            !Sm86::OwnsRuntime() && optiState.activeDlssgAdaMfgUnlock && !MfgUnlock::AnyModuleSeen();
 
         if (!optiState.dlssgMfgMax.has_value() && !unlockPending)
         {

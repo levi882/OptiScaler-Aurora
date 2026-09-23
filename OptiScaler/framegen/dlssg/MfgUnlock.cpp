@@ -329,7 +329,7 @@ unsigned int RewriteBlackwellKernels(HMODULE module)
 
 void MfgUnlock::TryApply()
 {
-    if (Sm86::OwnsRuntime() || !Config::Instance()->FGDLSSGAdaMfgUnlock.value_or_default())
+    if (Sm86::OwnsRuntime() || !State::Instance().activeDlssgAdaMfgUnlock)
         return;
 
     if (auto module = GetModuleHandleW(L"nvngx_dlssg.dll"); module != nullptr)
@@ -354,7 +354,7 @@ static std::wstring ModulePath(HMODULE module)
 
 void MfgUnlock::TryApply(HMODULE module)
 {
-    if (Sm86::OwnsRuntime() || !Config::Instance()->FGDLSSGAdaMfgUnlock.value_or_default() || module == nullptr)
+    if (Sm86::OwnsRuntime() || !State::Instance().activeDlssgAdaMfgUnlock || module == nullptr)
         return;
 
     {

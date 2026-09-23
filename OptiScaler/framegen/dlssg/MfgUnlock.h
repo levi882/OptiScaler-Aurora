@@ -59,7 +59,7 @@ Status LastStatus();
 bool AnyModuleSeen();
 
 // Applies the patches to every loaded nvngx_dlssg.dll copy, once per module. Silent and harmless
-// when the config option is off, when nvngx_dlssg.dll is not loaded, or when a signature does not
+// when the startup option is off, when nvngx_dlssg.dll is not loaded, or when a signature does not
 // match exactly once. The parameterless form patches whatever GetModuleHandleW finds; prefer the
 // handle form at load sites so a second copy (e.g. DriverStore) is not missed after the first.
 void TryApply();

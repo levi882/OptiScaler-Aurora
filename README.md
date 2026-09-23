@@ -6,24 +6,47 @@
 **RTX 40 多帧生成 · DLSS 神经渲染 · 自动运行库同步**
 
 [![Aurora v1.0](https://img.shields.io/badge/Aurora-v1.0-7c3aed?style=for-the-badge)](https://github.com/abc354402600/OptiScaler-Aurora/releases/tag/aurora-v1.0)
+[![AIO Preview 1](https://img.shields.io/badge/AIO-Preview%201%20UI8-f59e0b?style=for-the-badge)](https://github.com/levi882/OptiScaler-Aurora/releases/tag/aurora-aio-preview.1-rhi2)
 [![RTX 40 MFG](https://img.shields.io/badge/RTX%2040%20MFG-Up%20to%206X-76B900?style=for-the-badge&logo=nvidia&logoColor=white)](https://github.com/abc354402600/OptiScaler-Aurora)
 [![DLSS](https://img.shields.io/badge/DLSS-310.9-00AEEF?style=for-the-badge)](https://github.com/abc354402600/OptiScaler-Aurora)
 [![Streamline](https://img.shields.io/badge/Streamline-2.14-2563eb?style=for-the-badge)](https://github.com/abc354402600/OptiScaler-Aurora)
 
 [![DLSS Neural Rendering](https://img.shields.io/badge/DLSS%20Neural%20Rendering-310.8-8b5cf6?style=flat-square)](https://github.com/abc354402600/OptiScaler-Aurora)
 [![Runtime Sync](https://img.shields.io/badge/Runtime%20Sync-Auto%20Backup%20%7C%20Repair%20%7C%20Restore-16a34a?style=flat-square)](https://github.com/abc354402600/OptiScaler-Aurora)
-[![Downloads](https://img.shields.io/github/downloads/abc354402600/OptiScaler-Aurora/total?style=flat-square&label=Downloads&color=0ea5e9)](https://github.com/abc354402600/OptiScaler-Aurora/releases)
+[![AIO Downloads](https://img.shields.io/github/downloads/levi882/OptiScaler-Aurora/total?style=flat-square&label=AIO%20Downloads&color=0ea5e9)](https://github.com/levi882/OptiScaler-Aurora/releases)
 
 <br>
 
-<a href="https://github.com/abc354402600/OptiScaler-Aurora/releases/download/aurora-v1.0/OptiScaler_Aurora_v1.0_20260910.7z">
-  <img src="https://img.shields.io/badge/⬇%20Download-Aurora%20v1.0-22c55e?style=for-the-badge" alt="Download Aurora v1.0">
+<a href="https://github.com/levi882/OptiScaler-Aurora/releases/tag/aurora-aio-preview.1-rhi2">
+  <img src="https://img.shields.io/badge/⬇%20Download-AIO%20Preview%201%20UI8-22c55e?style=for-the-badge" alt="Download Aurora AIO Preview 1 UI8">
+</a>
+<a href="https://github.com/levi882/OptiScaler-Aurora/releases/tag/aurora-aio-preview.1-rhi2">
+  <img src="https://img.shields.io/badge/Release%20Notes-版本说明-334155?style=for-the-badge" alt="Release Notes">
 </a>
 <a href="https://github.com/abc354402600/OptiScaler-Aurora/releases/tag/aurora-v1.0">
-  <img src="https://img.shields.io/badge/Release%20Notes-版本说明-334155?style=for-the-badge" alt="Release Notes">
+  <img src="https://img.shields.io/badge/Upstream-Aurora%20v1.0-7c3aed?style=for-the-badge" alt="Original Aurora v1.0">
 </a>
 
 </div>
+
+---
+
+## Aurora AIO Preview 1 / 极光 AIO 预览版
+
+**This fork's current AIO package is an experimental prerelease.** Download the complete package from the [AIO Preview 1 release](https://github.com/levi882/OptiScaler-Aurora/releases/tag/aurora-aio-preview.1-rhi2). The Aurora v1.0 feature and game-compatibility notes below describe the [original upstream release](https://github.com/abc354402600/OptiScaler-Aurora/releases/tag/aurora-v1.0) unless explicitly marked as AIO.
+
+**本仓库的 AIO 是实验性预发布版。** 请从 [AIO Preview 1 发布页](https://github.com/levi882/OptiScaler-Aurora/releases/tag/aurora-aio-preview.1-rhi2)下载完整包；下方 Aurora v1.0 的功能与游戏兼容性记录来自[原上游版本](https://github.com/abc354402600/OptiScaler-Aurora/releases/tag/aurora-v1.0)，除非特别标明 AIO。
+
+| AIO feature / 功能 | Current behavior / 当前说明 |
+| --- | --- |
+| RTX 20/30 MFG | Optional DLSSG for SM86 0.3.5 component for NVIDIA D3D12; disabled by default. RTX 20/30 game compatibility still needs testing. / 集成可选的 SM86 0.3.5 组件，默认关闭；20/30 系游戏兼容性仍待实测。 |
+| RTX 40 MFG | Keeps Aurora's original unlock path. Its menu section remains visible when DLSSG is chosen as FG Input/Output; a patched DLL does not prove MFG is the active output. / 保留 Aurora 原有解锁路径；选择 DLSSG 输入或输出后仍显示区块，但补丁状态不等于当前正在输出 MFG。 |
+| Dynamic MFG / 动态 MFG | Uses Streamline's reported support flag and FPS target. Fixed DLSSG ratio is inactive while Dynamic MFG runs. Verified by a user on RTX 4070 Ti in ACSShadows (D3D12); other setups need testing. / 按 Streamline 能力标志启用，目标帧数可调；动态模式下固定倍率不生效。已在一例 RTX 4070 Ti / ACSShadows D3D12 环境中验证。 |
+| Neural Rendering / 神经渲染 | Bundles ShortFuse SF-v2 NR from RHI. Cross-generation NR compatibility is based on the component author's claims and has not been independently verified here. / 默认集成 RHI 的 ShortFuse SF-v2 NR；跨显卡代际兼容性尚未由本项目逐项验证。 |
+
+Install the **whole AIO archive** next to the game's real rendering `.exe` and run `setup_windows.bat`. Keep `OptiScaler/SM86/version.dll` inside its subfolder; do not rename or move it to the game root. To enable the RTX 20/30 component, use **RTX 20/30 MFG → 启用 RTX 20/30 DLSSG → 保存组件设置**, then fully restart the game. The component settings are separate from Aurora's bottom **保存设置** button. See the [AIO installation and component guide](https://github.com/levi882/OptiScaler-Aurora/blob/feat/aurora-aio-sm86/docs/AIO_SM86.md) and the README files inside the package.
+
+安装时将**完整 AIO 压缩包**解压到游戏实际渲染 `.exe` 所在目录，再运行 `setup_windows.bat`。保留 `OptiScaler/SM86/version.dll` 在子目录内，不要将它改名或移到游戏根目录。RTX 20/30 组件需在菜单中启用、**保存组件设置**并完全重启；该设置与底部的 Aurora **保存设置**相互独立。
 
 ---
 

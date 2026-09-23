@@ -3246,7 +3246,7 @@ void MenuCommon::RenderFrameGenerationSelection(RenderMenuContext& ctx)
         { FGInput::Upscaler, AuroraUtf8(L"OptiFG（超分输入）"),
             AuroraUtf8(L"需要先启用超分辨率。\n\n可与任意 FG Output 搭配，但部分游戏可能不完美。\n若出现 UI 重影或错位，通常需要 HUD Fix。") },
         { FGInput::DLSSG, AuroraUtf8(L"DLSSG（Streamline 路径）"),
-            AuroraUtf8(L"可与任意 FG Output 搭配。\n\n需要先在游戏设置中启用 DLSS 帧生成。\n原生支持 HUDless。\n\n仅适用于使用 Streamline 的游戏。") },
+            AuroraUtf8(L"需要搭配非“无”的 FG Output。\n\n需要先在游戏设置中启用 DLSS 帧生成。\n原生支持 HUDless。\n\n仅适用于使用 Streamline 的游戏。") },
         { FGInput::NvngxFG, AuroraUtf8(L"DLSSG（NVNGX 路径）"),
             AuroraUtf8(L"仅适用于部分 FSR FG 变体。\n\n需要先在游戏设置中启用 DLSS 帧生成。\n原生支持 HUDless，并使用 Streamline 交换链进行帧节奏控制。") },
         { FGInput::FSRFG, "FSR 3.1 FG",
@@ -3287,6 +3287,9 @@ void MenuCommon::RenderFrameGenerationSelection(RenderMenuContext& ctx)
     auto constexpr dlssgInputIndex = (uint32_t) FGInput::DLSSG;
     // inputOptions[dlssgInputIndex].set_disabled(state.streamlineVersion.major == 0, "Game doesn't use streamline");
     inputOptions[dlssgInputIndex].set_disabled(state.swapchainApi == API::DX11, AuroraUtf8(L"当前 API 不支持"));
+    inputOptions[dlssgInputIndex].set_disabled(
+        config->FGOutput.value_or_default() == FGOutput::NoFG,
+        AuroraUtf8(L"请先选择 FG Output。若使用游戏原生 DLSS 帧生成，FG Input 和 FG Output 都应设为“无”。"));
 
     // FSRFG inputs requirements
     auto constexpr fsrfgInputIndex = (uint32_t) FGInput::FSRFG;
@@ -3463,6 +3466,11 @@ void MenuCommon::RenderFrameGenerationSelection(RenderMenuContext& ctx)
             ImGui::EndTable();
         }
 
+        // Selecting "None" as the output must not leave the Streamline input intercepting
+        // a game-native DLSS FG plugin after the next restart.
+        if (config->FGInput == FGInput::DLSSG && config->FGOutput == FGOutput::NoFG)
+            config->FGInput = FGInput::NoFG;
+
         // Should be on a new line
         if (showNvngxFgDowndown)
         {
@@ -3602,7 +3610,9 @@ void MenuCommon::RenderFrameGenerationSelection(RenderMenuContext& ctx)
                 config->FGDLSSGFramerateTargetDMFG.reset();
             }
             ImGui::EndDisabled();
-            if (!state.dlssgDMFGCapabilityQueried)
+            if (state.streamlineVersion.major == 1)
+                ImGui::TextDisabled("%s", AURORA_CN("原生 Streamline 1.x 无法通过 Aurora 设置 MFG 倍率或动态 MFG；如需 3X–6X，请使用 OptiFG → DLSSG 输出。"));
+            else if (!state.dlssgDMFGCapabilityQueried)
                 ImGui::TextDisabled("%s", AURORA_CN("尚未取得 DLSSG 动态 MFG 能力信息；请在游戏中启用帧生成。"));
             else if (!state.dlssgGameDMFGSupported)
                 ImGui::TextDisabled("%s", AURORA_CN("当前 Streamline DLSSG 运行环境报告不支持动态 MFG。"));

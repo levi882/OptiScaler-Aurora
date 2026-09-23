@@ -1882,6 +1882,16 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
         if (State::Instance().activeFgInput == FGInput::NvngxFG)
             State::Instance().activeFgOutput = FGOutput::NoFG;
 
+        // A Streamline input only supplies frames to an Aurora FG output. With no output,
+        // leave the game's native DLSS FG plugin and swapchain untouched.
+        if (State::Instance().activeFgInput == FGInput::DLSSG &&
+            State::Instance().activeFgOutput == FGOutput::NoFG)
+        {
+            LOG_WARN("FGInput=DLSSG requires an FG output; using native Streamline passthrough");
+            Config::Instance()->FGInput = FGInput::NoFG;
+            State::Instance().activeFgInput = FGInput::NoFG;
+        }
+
         // Init Kernel proxies
         NtdllProxy::Init();
         KernelBaseProxy::Init();

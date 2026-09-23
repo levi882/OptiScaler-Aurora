@@ -311,6 +311,8 @@ Aurora Runtime Sync v1.3 automatically detects and preserves these SL1 files ins
 **重要：**《巫师3》使用游戏原生 **Streamline 1.5.6**。  
 Aurora Runtime Sync v1.3 会自动识别并保护这些 SL1 文件，不再使用 Streamline 2.x 强制覆盖。
 
+游戏原生 DLSS 帧生成可以继续使用：此时 Aurora 的 FG Input 和 FG Output 都设为“无”。原生 Streamline 1.5.6 路径不提供 Aurora 的 MFG 倍率或动态 MFG 控制；仅设置 `DLSSG（Streamline 路径）` 输入而不选择输出也无法获得 MFG。要使用已验证的 3X–6X，请按下方 OptiFG → DLSSG 步骤配置。
+
 Verified configuration / 已验证配置：
 
 - Proxy: `dxgi.dll`

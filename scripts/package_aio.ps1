@@ -1,12 +1,19 @@
 param(
     [Parameter(Mandatory=$true)][string]$BasePackage,
     [Parameter(Mandatory=$true)][string]$Sm86Source,
-    [string]$RhiCache,
+    [string]$RhiCache = (Join-Path (Split-Path -Parent $PSScriptRoot) 'build_out/rhi'),
     [string]$ArchiveTool = 'C:/Program Files/Bandizip/bz.exe',
-    [string]$Version = 'aurora-aio-preview.1'
+    [string]$Version = 'aurora-aio-preview.1-rhi2'
 )
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
+if (-not $RhiCache) { throw 'RHI cache is required: run scripts/fetch_rhi_runtimes.ps1 first' }
+$runtimeLock = Join-Path $PSScriptRoot 'rhi-runtimes.lock.json'
+$rhi = Get-Content -LiteralPath $runtimeLock -Raw | ConvertFrom-Json
+$nrPackages = @($rhi.packages | Where-Object { $_.files.name -contains 'nvngx_dlssnr.dll' })
+if ($nrPackages.Count -ne 1 -or $nrPackages[0].tag -ne 'dlssnr-310.8.SF-v2' -or $nrPackages[0].optional) {
+    throw 'AIO must contain only ShortFuse SF-v2 as the default NR runtime'
+}
 if ($Version -notmatch '^[a-zA-Z0-9._-]+$') { throw 'Invalid version filename' }
 $output = Join-Path $root "release/$Version"
 $archive = Join-Path $root "release/OptiScaler_$Version.7z"
@@ -39,8 +46,6 @@ $ini = "; Aurora AIO: opt-in via the RTX 20/30 panel; save and restart the game.
 Copy-Item -LiteralPath (Join-Path $root 'docs/AIO_SM86.md') -Destination (Join-Path $output 'README_AIO.md')
 Copy-Item -LiteralPath (Join-Path $root 'LICENSE') -Destination $output
 if ($RhiCache) {
-    $runtimeLock = Join-Path $PSScriptRoot 'rhi-runtimes.lock.json'
-    $rhi = Get-Content -LiteralPath $runtimeLock -Raw | ConvertFrom-Json
     $optional = Join-Path $output 'Optional/Runtimes'
     New-Item -ItemType Directory -Path $optional | Out-Null
     foreach ($package in $rhi.packages) {
@@ -62,9 +67,6 @@ if ($RhiCache) {
             }
         }
     }
-    # Keep a pristine original NR archive for restoring after trying an optional variant.
-    $originalNr = $rhi.packages | Where-Object tag -eq 'dlssnr-310.8.0'
-    Copy-Item -LiteralPath (Join-Path (Join-Path $RhiCache $originalNr.tag) $originalNr.asset) -Destination $optional
     Copy-Item -LiteralPath $runtimeLock -Destination (Join-Path $output 'RHI_RUNTIMES.json')
     Copy-Item -LiteralPath (Join-Path $root 'docs/RHI_RUNTIMES.md') -Destination (Join-Path $output 'README_RHI_RUNTIMES.md')
 }
@@ -77,6 +79,7 @@ $build = @{
     sm86Commit='9621db573e07ed54f50c15bbb585ed9a7bdfac28'; sm86SHA256=$expectedSm86
     baseSHA256=$expectedBase; inGameValidated=$false
     rhiRuntimesIncluded=[bool]$RhiCache
+    nrRuntime='ShortFuse 310.8.SF-v2'
 }
 $build | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $output 'AIO_BUILD.json') -Encoding utf8
 $hashes = @(Get-ChildItem -LiteralPath $output -Recurse -File | Sort-Object FullName | ForEach-Object {

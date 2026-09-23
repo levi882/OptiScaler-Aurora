@@ -26,6 +26,18 @@ static bool IsSL1AndDLSSGActive()
            (State::Instance().activeFgOutput == FGOutput::FSRFG || State::Instance().activeFgOutput == FGOutput::XeFG);
 }
 
+static void ObserveDlssgDmfgSupport(bool supported, uint32_t maxGeneratedFrames, const char* source)
+{
+    auto& state = State::Instance();
+    if (!state.dlssgDMFGCapabilityQueried || state.dlssgGameDMFGSupported != supported)
+        LOG_INFO("DLSSG Dynamic MFG capability from {}: supported={}, maxGeneratedFrames={}", source, supported,
+                 maxGeneratedFrames);
+    state.dlssgGameDMFGSupported = supported;
+    state.dlssgDMFGCapabilityQueried = true;
+    if (!supported)
+        Config::Instance()->FGDLSSGOverrideForceDMFG.set_volatile_value(false);
+}
+
 static bool IsSL1AndFGActive()
 {
     const auto& state = State::Instance();
@@ -1178,6 +1190,8 @@ sl::Result StreamlineHooks::hkslDLSSGSetOptions(const sl::ViewportHandle& viewpo
             sl::DLSSGOptions localOptions {};
             if (o_slDLSSGGetState(viewport, localState, &localOptions) == sl::Result::eOk)
             {
+                ObserveDlssgDmfgSupport(localState.bIsDynamicMFGSupported == sl::eTrue,
+                                        localState.numFramesToGenerateMax, "SetOptions probe");
                 // A wrapper ahead of the snippet can answer a lower ceiling than the patched one.
                 if (auto unlockedMax = MfgUnlock::UnlockedMax(); unlockedMax > localState.numFramesToGenerateMax)
                     localState.numFramesToGenerateMax = unlockedMax;
@@ -1237,6 +1251,7 @@ sl::Result StreamlineHooks::hkslDLSSGGetState(const sl::ViewportHandle& viewport
     sl::Result result {};
 
     const auto originalStructVersion = state.structVersion;
+    bool reportedDmfgSupported = false;
     if (originalStructVersion < 4)
     {
         sl::DLSSGState newState {};
@@ -1268,21 +1283,21 @@ sl::Result StreamlineHooks::hkslDLSSGGetState(const sl::ViewportHandle& viewport
                 newState.lastPresentInputsProcessingCompletionFenceValue;
         }
 
-        State::Instance().dlssgGameDMFGSupported = newState.bIsDynamicMFGSupported == sl::eTrue;
+        reportedDmfgSupported = newState.bIsDynamicMFGSupported == sl::eTrue;
     }
     else
     {
         result = o_slDLSSGGetState(viewport, state, options);
-        State::Instance().dlssgGameDMFGSupported = state.bIsDynamicMFGSupported == sl::eTrue;
+        reportedDmfgSupported = state.bIsDynamicMFGSupported == sl::eTrue;
 
         // The wrapper's ceiling, replaced by the unlocked count.
         if (auto unlockedMax = MfgUnlock::UnlockedMax(); unlockedMax > state.numFramesToGenerateMax)
             state.numFramesToGenerateMax = unlockedMax;
     }
 
-    if (!State::Instance().dlssgGameDMFGSupported)
+    if (result == sl::Result::eOk)
     {
-        Config::Instance()->FGDLSSGOverrideForceDMFG.set_volatile_value(false);
+        ObserveDlssgDmfgSupport(reportedDmfgSupported, state.numFramesToGenerateMax, "GetState hook");
     }
 
     auto& optiState = State::Instance();
@@ -1299,6 +1314,8 @@ sl::Result StreamlineHooks::hkslDLSSGGetState(const sl::ViewportHandle& viewport
             sl::DLSSGOptions localOptions {};
             if (o_slDLSSGGetState(viewport, localState, &localOptions) == sl::Result::eOk)
             {
+                ObserveDlssgDmfgSupport(localState.bIsDynamicMFGSupported == sl::eTrue,
+                                        localState.numFramesToGenerateMax, "GetState ceiling probe");
                 // A wrapper ahead of the snippet can answer a lower ceiling than the patched one.
                 if (auto unlockedMax = MfgUnlock::UnlockedMax(); unlockedMax > localState.numFramesToGenerateMax)
                     localState.numFramesToGenerateMax = unlockedMax;

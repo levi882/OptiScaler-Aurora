@@ -3591,8 +3591,10 @@ void MenuCommon::RenderFrameGenerationSelection(RenderMenuContext& ctx)
                 config->FGDLSSGFramerateTargetDMFG.reset();
             }
             ImGui::EndDisabled();
-            if (!state.dlssgGameDMFGSupported)
-                ImGui::TextDisabled("%s", AURORA_CN("当前 Streamline DLSSG 运行环境未报告支持动态 MFG。"));
+            if (!state.dlssgDMFGCapabilityQueried)
+                ImGui::TextDisabled("%s", AURORA_CN("尚未取得 DLSSG 动态 MFG 能力信息；请在游戏中启用帧生成。"));
+            else if (!state.dlssgGameDMFGSupported)
+                ImGui::TextDisabled("%s", AURORA_CN("当前 Streamline DLSSG 运行环境报告不支持动态 MFG。"));
         }
 
         Sm86::RenderMenu();

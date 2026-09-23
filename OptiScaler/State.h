@@ -231,6 +231,7 @@ class State
     bool WAR_xefgRequestFGToggle = false;
 
     bool dlssgGameDMFGSupported = false;
+    bool dlssgDMFGCapabilityQueried = false;
     sl::DLSSGMode dlssgLastSetMode = sl::DLSSGMode::eOff;
     int dlssgDetectedInterpolationCount = 0;
 

@@ -3599,7 +3599,8 @@ void MenuCommon::RenderFrameGenerationSelection(RenderMenuContext& ctx)
 
         Sm86::RenderMenu();
 
-        if (!dlssgInputOrOutput)
+        // Keep the patch status visible when DLSSG is routed through an OptiScaler FG input/output.
+        // Routing changes which generator presents frames; it does not undo an in-memory DLL patch.
         {
             if (auto section = ScopedCollapsingHeader(AURORA_CN("RTX 40 MFG###rtx40_mfg_settings"),
                                                       ImGuiTreeNodeFlags_DefaultOpen);
@@ -3617,6 +3618,8 @@ void MenuCommon::RenderFrameGenerationSelection(RenderMenuContext& ctx)
                 ImGui::EndDisabled();
                 if (Sm86::OwnsRuntime())
                     ImGui::TextWrapped("%s", AURORA_CN("状态：由 RTX 20/30 组件管理，本次启动不应用 RTX 40 补丁。"));
+                if (dlssgInputOrOutput)
+                    ImGui::TextWrapped("%s", AURORA_CN("当前 FG 输入/输出使用 DLSSG 路径。补丁状态仅表示运行库已修改；是否实际生成帧取决于 FG Output。"));
 
                 // The patch is applied once, as nvngx_dlssg.dll loads, so the box moving does nothing
                 // this session. Say so beside it rather than only in the tooltip.

@@ -9,12 +9,12 @@
 1. 退出游戏，将完整 AIO 包解压到真实渲染 EXE 所在目录。
 2. 按原方式运行 `setup_windows.bat`，选择适合游戏的 Aurora 代理名称，例如 `dxgi.dll` 或 `winmm.dll`。
 3. 保留整个 `OptiScaler/SM86` 子目录。**不用把 SM86 的 `version.dll` 复制到游戏根目录，也不要把它改名为 Aurora 的代理 DLL。**
-4. 打开 Aurora 菜单，在帧生成区域展开 **RTX 20/30 DLSSG**，启用组件，点击 **保存组件设置**，然后完全退出并重启游戏。
+4. 打开 Aurora 菜单，在帧生成区域展开 **RTX 20/30 MFG**，启用组件，点击 **保存组件设置**，然后完全退出并重启游戏。
 5. 在游戏设置中开启 DLSS 帧生成。若使用 Aurora 的 DLSSG 输出，NVNGX 替换选择 **无（原生 DLSSG）**，不要同时启用其他 FG 替代方案。
 
 SM86 默认关闭，避免改变 RTX 40/50、AMD、Intel 和已有安装的行为。首次开启需要重启。组件配置保存在 `OptiScaler/SM86/dlssg_sm86.ini`，Aurora 底部的“保存设置”不负责保存这份独立配置。
 
-RTX 20/30 DLSSG 与 RTX 40 MFG 使用相同的折叠面板样式，状态显示在开关下方，详细说明收在 `(?)` 悬停提示中。RTX 40 仍使用底部“保存设置”；两组设置的保存与生效方式保持独立。
+RTX 20/30 MFG 与 RTX 40 MFG 使用相同的折叠面板样式，状态显示在开关下方，详细说明收在 `(?)` 悬停提示中。RTX 40 仍使用底部“保存设置”；两组设置的保存与生效方式保持独立。即使 FG Input 或 FG Output 选择 DLSSG，RTX 40 区块也会显示补丁状态；补丁已应用不等于 RTX 40 MFG 正在输出，实际帧生成方式取决于 FG Output。
 
 两个面板首次显示时默认展开。“帧生成”区域的 FG Input、FG Output 和倍率设置下方直接显示共用的“强制动态 MFG”“DMFG 目标帧数”和应用/重置按钮，随后才是 RTX 20/30 与 RTX 40 面板。未检测到 Streamline DLSSG 运行环境报告支持动态 MFG 时，控件仍显示，但不可操作。RTX 40 固定倍率解锁补丁不会开启动态 MFG。RTX 20/30 的实际倍率仍受 SM86 `MaxGeneratedFrames` 与游戏插件上限约束；FPS Target 只在动态模式下生效。
 

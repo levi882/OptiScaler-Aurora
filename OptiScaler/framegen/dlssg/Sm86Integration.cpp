@@ -92,7 +92,7 @@ bool Sm86::OwnsRuntime() { return ownsRuntime.load(); }
 
 void Sm86::RenderMenu()
 {
-    if (auto section = ScopedCollapsingHeader(SM86_CN("RTX 20/30 DLSSG###sm86_settings"),
+    if (auto section = ScopedCollapsingHeader(SM86_CN("RTX 20/30 MFG###sm86_settings"),
                                               ImGuiTreeNodeFlags_DefaultOpen);
         section.IsHeaderOpen())
     {

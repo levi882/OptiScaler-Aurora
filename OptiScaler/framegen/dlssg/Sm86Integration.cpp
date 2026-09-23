@@ -132,9 +132,11 @@ void Sm86::RenderMenu()
         ImGui::Combo(SM86_CN("优化等级###sm86_optimized"), &settings.optimized, tierNames, 4);
         Help(L"等级 1 为组件默认档；等级 2/3 会牺牲画面一致性换取性能。实际效果取决于游戏和显卡。");
         int multiplier = settings.maxGeneratedFrames - 1;
-        ImGui::Combo(SM86_CN("倍率上限###sm86_frame_limit"), &multiplier, "2X\0" "3X\0" "4X\0" "5X\0" "6X\0");
+        ImGui::Combo(SM86_CN("最高允许倍率###sm86_frame_limit"), &multiplier, "2X\0" "3X\0" "4X\0" "5X\0" "6X\0");
         settings.maxGeneratedFrames = multiplier + 1;
-        Help(L"这是上限，不是强制实际倍率。默认 4X；5X/6X 还需要游戏和 Streamline 支持。不要强制旧版 4X 游戏超过其呈现队列上限。");
+        Help(L"仅设置 RTX 20/30 SM86 组件允许的最高倍率，不会直接请求或锁定这个倍率。默认 4X；选 6X 表示最多每 1 帧真实画面配 5 帧生成画面。\n"
+             L"固定倍率可由帧生成区域的“覆盖 DLSSG 倍率”请求；“强制动态 MFG”则按目标帧率自动调整。动态模式下固定倍率请求会被忽略，本项仍作为 SM86 的上限。\n"
+             L"实际倍率还受游戏与 Streamline 支持限制；旧版只支持 4X 的游戏不能强行提升到 6X。仅在 RTX 20/30 组件加载时生效，点击“保存组件设置”并完全重启游戏后应用。");
         int preset = settings.preset == "A" ? 1 : settings.preset == "B" ? 2 : 0;
         ImGui::Combo(SM86_CN("UI 重合成预设###sm86_preset"), &preset, "Auto\0A\0B\0");
         settings.preset = preset == 1 ? "A" : preset == 2 ? "B" : "Auto";

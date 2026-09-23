@@ -6,7 +6,7 @@
 **RTX 40 多帧生成 · DLSS 神经渲染 · 自动运行库同步**
 
 [![Aurora v1.0](https://img.shields.io/badge/Aurora-v1.0-7c3aed?style=for-the-badge)](https://github.com/abc354402600/OptiScaler-Aurora/releases/tag/aurora-v1.0)
-[![AIO Preview 1](https://img.shields.io/badge/AIO-Preview%201%20UI8-f59e0b?style=for-the-badge)](https://github.com/levi882/OptiScaler-Aurora/releases/tag/aurora-aio-preview.1-rhi2)
+[![AIO Preview 1](https://img.shields.io/badge/AIO-Preview%201-f59e0b?style=for-the-badge)](https://github.com/levi882/OptiScaler-Aurora/releases/tag/aurora-aio-preview.1-rhi2)
 [![RTX 40 MFG](https://img.shields.io/badge/RTX%2040%20MFG-Up%20to%206X-76B900?style=for-the-badge&logo=nvidia&logoColor=white)](https://github.com/abc354402600/OptiScaler-Aurora)
 [![DLSS](https://img.shields.io/badge/DLSS-310.9-00AEEF?style=for-the-badge)](https://github.com/abc354402600/OptiScaler-Aurora)
 [![Streamline](https://img.shields.io/badge/Streamline-2.14-2563eb?style=for-the-badge)](https://github.com/abc354402600/OptiScaler-Aurora)
@@ -18,7 +18,7 @@
 <br>
 
 <a href="https://github.com/levi882/OptiScaler-Aurora/releases/tag/aurora-aio-preview.1-rhi2">
-  <img src="https://img.shields.io/badge/⬇%20Download-AIO%20Preview%201%20UI8-22c55e?style=for-the-badge" alt="Download Aurora AIO Preview 1 UI8">
+  <img src="https://img.shields.io/badge/⬇%20Download-AIO%20Preview%201-22c55e?style=for-the-badge" alt="Download Aurora AIO Preview 1">
 </a>
 <a href="https://github.com/levi882/OptiScaler-Aurora/releases/tag/aurora-aio-preview.1-rhi2">
   <img src="https://img.shields.io/badge/Release%20Notes-版本说明-334155?style=for-the-badge" alt="Release Notes">

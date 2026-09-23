@@ -3570,7 +3570,7 @@ void MenuCommon::RenderFrameGenerationSelection(RenderMenuContext& ctx)
                 config->FGDLSSGOverrideForceDMFG = dynamicMFG;
                 StreamlineHooks::updateDlssgOptions();
             }
-            ShowHelpMarker(AURORA_CN("适用于 RTX 20/30 DLSSG 与 RTX 40 MFG。需要游戏的 Streamline DLSSG 报告支持动态 MFG；未检测到支持时控件不可操作。SM86 倍率仍受组件配置和游戏插件的上限约束。"));
+            ShowHelpMarker(AURORA_CN("适用于 RTX 20/30 DLSSG 与 RTX 40 MFG。需要 Streamline DLSSG 运行环境报告支持动态 MFG；RTX 40 固定倍率解锁补丁不会开启动态 MFG。未检测到支持时控件不可操作。SM86 倍率仍受组件配置和游戏插件的上限约束。"));
             ImGui::EndDisabled();
 
             ImGui::BeginDisabled(!state.dlssgGameDMFGSupported ||
@@ -3592,7 +3592,7 @@ void MenuCommon::RenderFrameGenerationSelection(RenderMenuContext& ctx)
             }
             ImGui::EndDisabled();
             if (!state.dlssgGameDMFGSupported)
-                ImGui::TextDisabled("%s", AURORA_CN("当前游戏未报告支持动态 MFG。"));
+                ImGui::TextDisabled("%s", AURORA_CN("当前 Streamline DLSSG 运行环境未报告支持动态 MFG。"));
         }
 
         Sm86::RenderMenu();
@@ -3633,7 +3633,7 @@ void MenuCommon::RenderFrameGenerationSelection(RenderMenuContext& ctx)
                 {
                     const auto& mfg = MfgUnlock::LastStatus();
 
-                    const ImVec4 good = ImGui::GetStyleColorVec4(ImGuiCol_Text);
+                    const ImVec4 good(0.f, 1.f, 0.f, 1.f);
                     const ImVec4 bad(1.f, 0.55f, 0.4f, 1.f);
 
                     if (!mfg.ModuleFound)
@@ -3668,7 +3668,6 @@ void MenuCommon::RenderFrameGenerationSelection(RenderMenuContext& ctx)
                 else if (!Sm86::OwnsRuntime())
                     ImGui::TextWrapped("%s", AURORA_CN("状态：解锁开关已关闭"));
 
-                ImGui::TextDisabled("%s", AURORA_CN("使用底部“保存设置”，重启游戏后生效。"));
                 ImGui::PopTextWrapPos();
             }
         }

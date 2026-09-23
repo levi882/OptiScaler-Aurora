@@ -36,7 +36,7 @@
                          "asset":  "nvngx_dlssg_310.9.1.zip",
                          "url":  "https://github.com/RankFTW/rhi-repo/releases/download/dlssg-310.9.1/nvngx_dlssg_310.9.1.zip",
                          "sha256":  "b42d4b89a8ba652d0ca038e0e1d4a241b1569d00559ef01dc772c2ec38e4e550",
-                         "optional":  false,
+                         "optional":  true,
                          "files":  [
                                        {
                                            "name":  "nvngx_dlssg.dll",

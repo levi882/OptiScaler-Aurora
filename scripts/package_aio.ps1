@@ -15,6 +15,10 @@ $nrPackages = @($rhi.packages | Where-Object { $_.files.name -contains 'nvngx_dl
 if ($nrPackages.Count -ne 1 -or $nrPackages[0].tag -ne 'dlssnr-310.8.SF-v2' -or $nrPackages[0].optional) {
     throw 'AIO must contain only ShortFuse SF-v2 as the default NR runtime'
 }
+$fgPackages = @($rhi.packages | Where-Object { $_.files.name -contains 'nvngx_dlssg.dll' })
+if ($fgPackages.Count -ne 1 -or -not $fgPackages[0].optional) {
+    throw 'RHI DLSSG must remain optional; preserve the Aurora base FG runtime'
+}
 if ($Version -notmatch '^[a-zA-Z0-9._-]+$') { throw 'Invalid version filename' }
 $output = Join-Path $root "release/$Version"
 $archive = Join-Path $root "release/OptiScaler_$Version.7z"
@@ -28,6 +32,11 @@ if ((Get-Item -LiteralPath $mainDll).VersionInfo.ProductVersion -notmatch 'aio-p
 New-Item -ItemType Directory -Path $output | Out-Null
 & $ArchiveTool x -y "-o:$output" $BasePackage
 if ($LASTEXITCODE -ne 0) { throw 'Base extraction failed' }
+$baseFg = Join-Path $output 'OptiScaler/nvngx_dlssg.dll'
+$expectedBaseFg = 'c64928fdb7c48a57722ea8eef2662171edc323473adea66c29a206a23f1a2bed'
+if ((Get-FileHash -LiteralPath $baseFg -Algorithm SHA256).Hash -ine $expectedBaseFg) {
+    throw 'Unexpected Aurora base DLSSG runtime; revalidate before packaging'
+}
 Copy-Item -LiteralPath $mainDll,(Join-Path $root 'x64/Release/a/nvngx.dll_dlssnr.dll') -Destination $output -Force
 foreach ($name in @('nvngx.dll_dlssnr.exp','nvngx.dll_dlssnr.lib','nvngx.dll_dlssnr.pdb')) {
     $path = Join-Path $output $name
@@ -81,6 +90,7 @@ $build = @{
     baseSHA256=$expectedBase; inGameValidated=$false
     rhiRuntimesIncluded=[bool]$RhiCache
     nrRuntime='ShortFuse 310.8.SF-v2'
+    fgRuntime='Aurora base nvngx_dlssg.dll 310.9.0.0'
 }
 $build | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $output 'AIO_BUILD.json') -Encoding utf8
 $hashes = @(Get-ChildItem -LiteralPath $output -Recurse -File | Sort-Object FullName | ForEach-Object {

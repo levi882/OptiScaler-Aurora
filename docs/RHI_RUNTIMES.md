@@ -1,6 +1,6 @@
 # AIO RHI runtime refresh 2 — ShortFuse NR
 
-运行库取自 [RankFTW/rhi-repo Releases](https://github.com/RankFTW/rhi-repo/releases)，与当前编译的 Aurora AIO 程序一同打包。以下固定的运行库组合尚未完成游戏实测。
+SR、RR 和 NR 运行库取自 [RankFTW/rhi-repo Releases](https://github.com/RankFTW/rhi-repo/releases)，与当前编译的 Aurora AIO 程序一同打包。FG 保留 Aurora 原包的 310.9.0.0；RHI 的 310.9.1.0 仅作为可选压缩包附带。此前 AIO 默认替换 FG DLL 后，有用户报告同一游戏中动态 MFG 控件变灰；运行库差异已确认，但恢复情况仍需游戏内复测。
 
 ## 默认安装内容
 
@@ -8,10 +8,12 @@
 | --- | --- | --- |
 | nvngx_dlss.dll | SR 310.9.1.0 | dlss-310.9.1 |
 | nvngx_dlssd.dll | RR 310.9.1.0 | dlssd-310.9.1 |
-| nvngx_dlssg.dll | FG 310.9.1.0 | dlssg-310.9.1 |
+| nvngx_dlssg.dll | FG 310.9.0.0 | Aurora 原包，SHA-256 `c64928fdb7c48a57722ea8eef2662171edc323473adea66c29a206a23f1a2bed` |
 | nvngx_dlssnr.dll | ShortFuse NR 310.8.SF-v2 | dlssnr-310.8.SF-v2 |
 
-SR/RR/FG DLL 的 NVIDIA Authenticode 签名在打包时验证有效。ShortFuse NR 是第三方修改版，Windows 验签结果为 `NotSigned`；文件内版本字符串为 `310.8.SF.0`，SF-v2 来自 Release 标签。下载 ZIP 的 SHA-256 与 GitHub Release 提供的摘要一致；来源链接、压缩包及 DLL 哈希见 `RHI_RUNTIMES.json`。
+SR/RR/FG DLL 的 NVIDIA Authenticode 签名在打包时验证有效。ShortFuse NR 是第三方修改版，Windows 验签结果为 `NotSigned`；文件内版本字符串为 `310.8.SF.0`，SF-v2 来自 Release 标签。RHI 下载 ZIP 的 SHA-256 与 GitHub Release 提供的摘要一致；来源链接、压缩包及 DLL 哈希见 `RHI_RUNTIMES.json`。
+
+`Optional/Runtimes/nvngx_dlssg_310.9.1.zip` 保留 RHI 的 FG 310.9.1.0 供手动比较，默认安装不会解压或同步它。若从先前的 AIO RHI2 升级，重新运行 `setup_windows.bat` 的运行库同步步骤，使已被旧包同步到游戏目录的 FG DLL 一并恢复为本包的 310.9.0.0；仅覆盖 `OptiScaler` 子目录不足以更新那些游戏目录副本。
 
 本包统一使用 ShortFuse SF-v2，不再附带原版 NR 或 RTX40 专用修改版。根目录的 `nvngx.dll_dlssnr.dll` 是 Aurora 自己的转发组件，继续使用当前编译版本，不能拿 NR 运行库覆盖或改名替换它。
 

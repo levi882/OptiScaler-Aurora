@@ -3570,67 +3570,81 @@ void MenuCommon::RenderFrameGenerationSelection(RenderMenuContext& ctx)
                     StreamlineHooks::updateDlssgOptions();
                 }
             }
+        }
 
-            SeparatorWithHelpMarker(AURORA_CN("RTX 40 MFG 解锁"), AURORA_CN("同时提高 nvngx_dlssg.dll 内部允许的生成帧上限，以及 Streamline 对外报告的插帧数量，因此 Blackwell 之前的显卡也可提供最高 6X。\n补丁只写入内存，不会修改磁盘上的 DLL；下次启动游戏时生效。\n该行为未公开，也不受 NVIDIA 官方支持。"));
+        Sm86::RenderMenu();
 
-            bool adaUnlock = config->FGDLSSGAdaMfgUnlock.value_or_default();
-
-            ImGui::BeginDisabled(Sm86::OwnsRuntime());
-            if (ImGui::Checkbox(AURORA_CN("解锁 RTX 40 MFG"), &adaUnlock))
-                config->FGDLSSGAdaMfgUnlock = adaUnlock;
-            ImGui::EndDisabled();
-            if (Sm86::OwnsRuntime())
-                ImGui::TextWrapped("%s", AURORA_CN("RTX 20/30 组件正在管理 DLSSG，本次启动不应用 RTX 40 解锁补丁。"));
-
-            // The patch is applied once, as nvngx_dlssg.dll loads, so the box moving does nothing
-            // this session. Say so beside it rather than only in the tooltip.
-            if (!Sm86::OwnsRuntime() && adaUnlock != (state.dlssgMfgMax.value_or(1) > 1))
+        if (!dlssgInputOrOutput)
+        {
+            if (auto section = ScopedCollapsingHeader(AURORA_CN("RTX 40 MFG###rtx40_mfg_settings"));
+                section.IsHeaderOpen())
             {
-                ImGui::SameLine();
-                ImGui::TextColored(ImVec4(1.f, 0.8f, 0.f, 1.f), AURORA_CN("（重启后生效）"));
-            }
+                ScopedIndent indent;
+                ImGui::PushTextWrapPos(0.0f);
 
-            // What the last attempt found.
-            //
-            // The signatures carry the shape of the code they patch, so a module nobody has looked at
-            // is not recognised -- the expected outcome on an unexamined version, not a fault. Saying
-            // which version that was is the difference between a report that can be acted on and "it
-            // does not work".
-            if (adaUnlock && !Sm86::OwnsRuntime())
-            {
-                const auto& mfg = MfgUnlock::LastStatus();
+                bool adaUnlock = config->FGDLSSGAdaMfgUnlock.value_or_default();
 
-                const ImVec4 good(0.4f, 0.9f, 0.5f, 1.f);
-                const ImVec4 bad(1.f, 0.55f, 0.4f, 1.f);
+                ImGui::BeginDisabled(Sm86::OwnsRuntime());
+                if (ImGui::Checkbox(AURORA_CN("解锁 RTX 40 MFG###rtx40_mfg_enabled"), &adaUnlock))
+                    config->FGDLSSGAdaMfgUnlock = adaUnlock;
+                ShowHelpMarker(AURORA_CN("同时提高 nvngx_dlssg.dll 内部允许的生成帧上限，以及 Streamline 对外报告的插帧数量，因此 Blackwell 之前的显卡也可提供最高 6X。\n补丁只写入内存，不会修改磁盘上的 DLL；下次启动游戏时生效。\n该行为未公开，也不受 NVIDIA 官方支持。"));
+                ImGui::EndDisabled();
+                if (Sm86::OwnsRuntime())
+                    ImGui::TextWrapped("%s", AURORA_CN("状态：由 RTX 20/30 组件管理，本次启动不应用 RTX 40 补丁。"));
 
-                if (!mfg.ModuleFound)
+                // The patch is applied once, as nvngx_dlssg.dll loads, so the box moving does nothing
+                // this session. Say so beside it rather than only in the tooltip.
+                if (!Sm86::OwnsRuntime() && adaUnlock != (state.dlssgMfgMax.value_or(1) > 1))
                 {
-                    ImGui::TextColored(bad, AURORA_CN("nvngx_dlssg.dll 未加载——当前游戏没有运行 DLSS 帧生成。"));
+                    ImGui::TextColored(ImVec4(1.f, 0.8f, 0.f, 1.f), AURORA_CN("（重启后生效）"));
                 }
-                else
-                {
-                    const std::string version = mfg.SnippetVersion.empty() ? AuroraUtf8(L"版本未知") : mfg.SnippetVersion;
 
-                    if (mfg.CopiesComplete > 0)
+                // What the last attempt found.
+                //
+                // The signatures carry the shape of the code they patch, so a module nobody has looked at
+                // is not recognised -- the expected outcome on an unexamined version, not a fault. Saying
+                // which version that was is the difference between a report that can be acted on and "it
+                // does not work".
+                if (adaUnlock && !Sm86::OwnsRuntime())
+                {
+                    const auto& mfg = MfgUnlock::LastStatus();
+
+                    const ImVec4 good = ImGui::GetStyleColorVec4(ImGuiCol_Text);
+                    const ImVec4 bad(1.f, 0.55f, 0.4f, 1.f);
+
+                    if (!mfg.ModuleFound)
                     {
-                        // Any fully patched copy means MFG is up; copies with unknown
-                        // signatures (e.g. the driver store) are a log-line matter, not
-                        // something the overlay should cry about.
-                        if (mfg.CopiesSeen > 1)
-                            ImGui::TextColored(good, AURORA_CN("nvngx_dlssg %s：MFG 已启用（已修补 %u 个副本）。"),
-                                               version.c_str(), mfg.CopiesComplete);
-                        else
-                            ImGui::TextColored(good, AURORA_CN("nvngx_dlssg %s：两个限制点均已修补。"), version.c_str());
+                        ImGui::TextWrapped("%s", AURORA_CN("状态：本次启动未加载 nvngx_dlssg.dll"));
                     }
                     else
-                        ImGui::TextColored(bad,
-                                           AURORA_CN("nvngx_dlssg %s：当前版本特征未识别（Advertise：%s，Validate：%s）。请反馈此版本。"),
-                                           version.c_str(), mfg.AdvertiseMatched ? AURORA_CN("通过") : AURORA_CN("未通过"),
-                                           mfg.ValidateMatched ? AURORA_CN("通过") : AURORA_CN("未通过"));
+                    {
+                        const std::string version = mfg.SnippetVersion.empty() ? AuroraUtf8(L"版本未知") : mfg.SnippetVersion;
 
-                    if (mfg.KernelsRewritten > 0)
-                        ImGui::TextColored(good, AURORA_CN("%u 个 Kernel Container 已切换为 Blackwell 路径。"), mfg.KernelsRewritten);
+                        if (mfg.CopiesComplete > 0)
+                        {
+                            // Any fully patched copy means MFG is up; copies with unknown
+                            // signatures (e.g. the driver store) are a log-line matter, not
+                            // something the overlay should cry about.
+                            if (mfg.CopiesSeen > 1)
+                                ImGui::TextColored(good, AURORA_CN("状态：nvngx_dlssg %s 解锁补丁已应用（%u 个副本）"),
+                                                   version.c_str(), mfg.CopiesComplete);
+                            else
+                                ImGui::TextColored(good, AURORA_CN("状态：nvngx_dlssg %s 解锁补丁已应用"), version.c_str());
+                        }
+                        else
+                            ImGui::TextColored(bad,
+                                               AURORA_CN("nvngx_dlssg %s：当前版本特征未识别（Advertise：%s，Validate：%s）。请反馈此版本。"),
+                                               version.c_str(), mfg.AdvertiseMatched ? AURORA_CN("通过") : AURORA_CN("未通过"),
+                                               mfg.ValidateMatched ? AURORA_CN("通过") : AURORA_CN("未通过"));
+
+                        if (mfg.KernelsRewritten > 0)
+                            ImGui::TextDisabled(AURORA_CN("%u 个 Kernel Container 已切换为 Blackwell 路径。"), mfg.KernelsRewritten);
+                    }
                 }
+                else if (!Sm86::OwnsRuntime())
+                    ImGui::TextWrapped("%s", AURORA_CN("状态：解锁开关已关闭"));
+                ImGui::TextDisabled("%s", AURORA_CN("使用底部“保存设置”，重启游戏后生效。"));
+                ImGui::PopTextWrapPos();
             }
         }
 
@@ -7110,7 +7124,8 @@ void MenuCommon::RenderMainMenuTable(RenderMenuContext& ctx)
 
         // Left column: active upscaler state, frame generation, FSR common, latency and fakenvapi controls.
         RenderActiveUpscalerSettings(ctx);
-        Sm86::RenderMenu();
+        if (ctx.state.activeFgInput == FGInput::ForceXeLL)
+            Sm86::RenderMenu(); // Keep component settings accessible when FG controls are hidden.
         RenderFrameGenerationSelection(ctx);
         RenderFrameGenerationRuntimeSettings(ctx);
         RenderFsrCommonSettings(ctx);

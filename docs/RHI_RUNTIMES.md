@@ -1,6 +1,6 @@
 # AIO RHI runtime refresh 2 — ShortFuse NR
 
-运行库取自 [RankFTW/rhi-repo Releases](https://github.com/RankFTW/rhi-repo/releases)。本包复用 Aurora AIO Preview 1 的已编译程序，更新随包运行库，不修改程序功能。版本组合尚未完成游戏实测。
+运行库取自 [RankFTW/rhi-repo Releases](https://github.com/RankFTW/rhi-repo/releases)，与当前编译的 Aurora AIO 程序一同打包。以下固定的运行库组合尚未完成游戏实测。
 
 ## 默认安装内容
 

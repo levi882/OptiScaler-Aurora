@@ -92,19 +92,10 @@ bool Sm86::OwnsRuntime() { return ownsRuntime.load(); }
 
 void Sm86::RenderMenu()
 {
-    if (auto section = ScopedCollapsingHeader(SM86_CN("RTX 20/30 DLSSG（AIO）###sm86_settings"));
+    if (auto section = ScopedCollapsingHeader(SM86_CN("RTX 20/30 DLSSG###sm86_settings"));
         section.IsHeaderOpen())
     {
         ScopedIndent indent;
-        ImGui::TextUnformatted(SM86_CN("DLSSG for SM86 0.3.5 · RTX 20/30 · D3D12"));
-        ImGui::TextWrapped("%s", SM86_CN("实验性组合，尚未完成游戏内兼容性验证。"));
-        if (IsLoaded())
-            ImGui::TextWrapped("%s", SM86_CN("组件已加载；是否正在生成帧，请以游戏表现和组件日志为准。"));
-        else
-            ImGui::TextWrapped("%s", SM86_CN("本次启动未加载 AIO 组件。启用并保存后，需要完全重启游戏。"));
-        if (!startupError.empty())
-            ImGui::TextWrapped("%s", startupError.c_str());
-
         static Document document;
         static Settings saved;
         static bool attempted = false;
@@ -125,7 +116,14 @@ void Sm86::RenderMenu()
         ImGui::BeginDisabled(!ready);
         auto& settings = document.settings;
         ImGui::Checkbox(SM86_CN("启用 RTX 20/30 DLSSG###sm86_enabled"), &settings.enabled);
-        Help(L"仅适用于 NVIDIA RTX 20/30 的 D3D12 路径。RTX 40/50 请保留原有方案。组件独立加载，不占用游戏根目录的 version.dll。所有改动保存后重启生效。");
+        Help(L"DLSSG for SM86 0.3.5，适用于 NVIDIA RTX 20/30 的 D3D12 路径。实验性组合，尚未完成游戏内兼容性验证。\nRTX 40/50 请保留原有方案。组件独立加载，不占用游戏根目录的 version.dll。所有改动保存后重启生效。\n先在游戏中开启 DLSS 帧生成。使用 Aurora DLSSG 路径时选择“无（原生 DLSSG）”；不要同时启用其他帧生成替代方案。");
+        ImGui::EndDisabled();
+        ImGui::TextWrapped("%s", IsLoaded() ? SM86_CN("状态：组件已加载") : SM86_CN("状态：本次启动未加载组件"));
+        Help(L"组件已加载不代表正在生成帧，请以游戏表现和组件日志为准。启用并保存后，需要完全退出并重启游戏。");
+        if (!startupError.empty())
+            ImGui::TextWrapped("%s", startupError.c_str());
+        ImGui::Spacing();
+        ImGui::BeginDisabled(!ready);
         ImGui::PushItemWidth(ImGui::GetFontSize() * 15.0f);
         const std::string tiers[] = { Utf8(L"0 · 原厂数值"), Utf8(L"1 · 一致性优先（推荐）"),
                                       Utf8(L"2 · 有损图像加速"), Utf8(L"3 · 更多有损加速") };
@@ -156,8 +154,8 @@ void Sm86::RenderMenu()
             ImGui::TextWrapped("%s", SM86_CN("已保存的设置将在完全退出并重启游戏后生效。"));
         if (!error.empty())
             ImGui::TextWrapped("%s", error.c_str());
-        ImGui::TextWrapped("%s", SM86_CN("先在游戏中开启 DLSS 帧生成。使用 Aurora DLSSG 路径时选择“无（原生 DLSSG）”；不要同时启用其他帧生成替代方案。"));
-        ImGui::TextWrapped("%s", SM86_CN("组件配置单独保存；底部“保存设置”仅保存 Aurora 配置。"));
+        ImGui::TextDisabled("%s", SM86_CN("使用“保存组件设置”，重启游戏后生效。"));
+        Help(L"组件配置单独保存到 OptiScaler/SM86/dlssg_sm86.ini；底部“保存设置”仅保存 Aurora 配置。");
     }
 }
 

@@ -75,7 +75,7 @@ Install the **whole AIO archive** next to the game's real rendering `.exe` and r
 | Neverness to Everness MFG crash fix | ✅ 异环 MFG 闪退修复 |
 | Onimusha compatibility changes | ✅ 鬼武者兼容性增强 |
 | Legacy Streamline 1.x protection | ✅ 自动识别 / 保护 / 自愈 |
-| The Witcher 3 compatibility | ✅ SL1 protection + RTX 40 6X MFG |
+| The Witcher 3 compatibility | ✅ Native SL2 FG on updated builds; SL1 protection for older builds / 新版原生 SL2 FG、旧版 SL1 保护 |
 | The Blood of Dawnwalker compatibility | ✅ DLSS 5 + RTX 40 6X MFG verified |
 
 ---
@@ -305,10 +305,20 @@ Aurora 同时包含针对该游戏的额外兼容性修改。
 
 Aurora has been verified with the DX12 version of The Witcher 3.
 
-**Important:** The Witcher 3 uses the older native **Streamline 1.5.6** runtime.  
+#### Updated game builds with Streamline 2 / 已升级 Streamline 2 的游戏版本
+
+For updated game builds using Streamline 2, keep Aurora's **FG Input / FG Output set to None** and enable DLSS Frame Generation in the game. Aurora's RTX 40 MFG unlock and native DLSSG controls remain available; Dynamic MFG depends on the runtime's reported support.
+
+已升级 Streamline 2 的新版游戏：Aurora 的 **FG Input / FG Output 均设为“无”**，在游戏内开启 DLSS 帧生成。保留 RTX 40 MFG 解锁和原生 DLSSG 控制；动态 MFG 是否可用取决于运行库报告的支持情况，实际帧率表现以游戏实测为准。
+
+#### Older game builds with Streamline 1 / 仍使用 Streamline 1 的旧游戏版本
+
+**Important:** Older builds use the native **Streamline 1.5.6** runtime.
+
 Aurora Runtime Sync v1.3 automatically detects and preserves these SL1 files instead of replacing them with Streamline 2.x.
 
-**重要：**《巫师3》使用游戏原生 **Streamline 1.5.6**。  
+**重要：**以下说明适用于仍使用游戏原生 **Streamline 1.5.6** 的旧版《巫师3》。
+
 Aurora Runtime Sync v1.3 会自动识别并保护这些 SL1 文件，不再使用 Streamline 2.x 强制覆盖。
 
 游戏原生 DLSS 帧生成可以继续使用：此时 Aurora 的 FG Input 和 FG Output 都设为“无”。原生 Streamline 1.5.6 路径不提供 Aurora 的 MFG 倍率或动态 MFG 控制；仅设置 `DLSSG（Streamline 路径）` 输入而不选择输出也无法获得 MFG。要使用已验证的 3X–6X，请按下方 OptiFG → DLSSG 步骤配置。

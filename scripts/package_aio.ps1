@@ -54,6 +54,7 @@ $ini = $ini -replace '(?m)^Enabled=1\r?$', 'Enabled=0'
 $ini = "; Aurora AIO: opt-in via the RTX 20/30 panel; save and restart the game.`r`n" + $ini
 [IO.File]::WriteAllText((Join-Path $component 'dlssg_sm86.ini'), $ini, [Text.UTF8Encoding]::new($true))
 Copy-Item -LiteralPath (Join-Path $root 'docs/AIO_SM86.md') -Destination (Join-Path $output 'README_AIO.md')
+Copy-Item -LiteralPath (Join-Path $root 'README.md') -Destination (Join-Path $output 'README.md') -Force
 Copy-Item -LiteralPath (Join-Path $root 'LICENSE') -Destination $output
 if ($RhiCache) {
     $optional = Join-Path $output 'Optional/Runtimes'
